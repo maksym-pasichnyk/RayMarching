@@ -1,18 +1,14 @@
 #pragma once
 //#extension GL_ARB_shading_language_include : require
 
-struct Camera {
-    vec3 position;
-    mat4 localToWorldMatrix;
-    mat4 cameraToWorldMatrix;
-};
+uniform ivec2 _Resolution;
+uniform float _Time;
+uniform float _DeltaTime;
+uniform vec3 _WorldSpaceCameraPos;
+uniform mat4 _LocalToWorldMatrix;
+uniform mat4 _CameraToWorldMatrix;
 
-uniform Camera camera;
-uniform ivec2 iResolution;
-uniform float iTime;
-
-#define ScreenToWorldPosition(v) \
-    vec3(vec4(normalize(vec3(((v - 0.5f  * iResolution) * 1.15470113678f + 1.0f) / iResolution.y, 1)), 1) * camera.cameraToWorldMatrix)
+#define ScreenToWorldPosition(v) vec3(vec4(normalize(vec3(v, 1)), 1) * _CameraToWorldMatrix)
 
 float smin(float a, float b, float k) {
     float h = max(k - abs(a - b), 0);

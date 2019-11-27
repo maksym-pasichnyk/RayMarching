@@ -242,7 +242,7 @@ vec2 getLight(vec3 point) {
 }
 
 vec4 getColor(in vec2 i) {
-    vec3 ray_orig = camera.position;
+    vec3 ray_orig = _WorldSpaceCameraPos;
     vec3 ray_dir = ScreenToWorldPosition(i);
 
     float dist = render(Ray(ray_orig, ray_dir));

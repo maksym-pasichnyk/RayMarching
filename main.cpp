@@ -9,6 +9,8 @@
 #include <cstring>
 
 namespace {
+    inline constexpr float HALF_FOV_60_TAN = 0.577350269f;
+
     using rosy::graphics::ShaderType;
     using rosy::graphics::ShaderProgram;
     using rosy::graphics::Attrib;
@@ -103,9 +105,9 @@ void rosy::load() {
 
     camera.transform.position = {0, 1, 10};
 
-    fragment.set("camera.position", camera.transform.position.get());
-    fragment.set("camera.localToWorldMatrix", camera.transform.localToWorldMatrix());
-    fragment.set("camera.cameraToWorldMatrix", camera.cameraToWorldMatrix());
+    fragment.set("_WorldSpaceCameraPos", camera.transform.position.get());
+    fragment.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
+    fragment.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
 
     resize(rosy::window::getWidth(), rosy::window::getHeight());
 
@@ -118,31 +120,43 @@ void rosy::unload() {
     glUnmapNamedBuffer(m_vbo);
 }
 
+
+
 void rosy::resize(int width, int height) {
     glViewport(0, 0, width, height);
 
-    m_buffer[1].u = float(width);
-    m_buffer[2].u = float(width);
-    m_buffer[2].v = float(height);
-    m_buffer[3].v = float(height);
+    const float yScale = 1.0f / float(height);
+    const float aspect = float(width) * yScale;
 
-    fragment.setInt("iResolution", width, height);
+    m_buffer[0].u = -aspect * HALF_FOV_60_TAN + yScale;
+    m_buffer[0].v = -HALF_FOV_60_TAN + yScale;
+
+    m_buffer[1].u = aspect * HALF_FOV_60_TAN + yScale;
+    m_buffer[1].v = -HALF_FOV_60_TAN + yScale;
+
+    m_buffer[2].u = aspect * HALF_FOV_60_TAN + yScale;
+    m_buffer[2].v = HALF_FOV_60_TAN + yScale;
+
+    m_buffer[3].u = -aspect * HALF_FOV_60_TAN + yScale;
+    m_buffer[3].v = HALF_FOV_60_TAN + yScale;
+
+    fragment.setInt("_Resolution", width, height);
 }
 
 void rosy::update(rosy::timer::duration dt) {
     uint8_t state = camera.update(dt);
 
     if (state & Camera::UpdateState::updatePos) {
-        fragment.set("camera.position", camera.transform.position.get());
+        fragment.set("_WorldSpaceCameraPos", camera.transform.position.get());
     }
 
     if (state & Camera::UpdateState::updateMat) {
-        fragment.set("camera.localToWorldMatrix", camera.transform.localToWorldMatrix());
-        fragment.set("camera.cameraToWorldMatrix", camera.cameraToWorldMatrix());
+        fragment.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
+        fragment.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
     }
 
     auto iTime = std::chrono::duration<double>(rosy::timer::getTime() - timeStart);
-    fragment.setFloat("iTime", iTime.count());
+    fragment.setFloat("_Time", iTime.count());
 }
 
 void rosy::draw() {
