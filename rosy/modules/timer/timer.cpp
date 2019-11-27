@@ -3,7 +3,7 @@
 
 #include <thread>
 
-namespace rosy::chrono {
+namespace rosy::timer {
     namespace {
         module<Timer> instance;
     }
@@ -42,16 +42,13 @@ namespace rosy::chrono {
         return m_delta;
     }
 
-    void reset() {
-        instance->reset();
-    }
-    duration step() {
-        return instance->step();
-    }
     point getTime() {
         return instance->getTime();
     }
     size_t getFPS() {
         return instance->getFPS();
+    }
+    double getAverageDelta() {
+        return instance->getAverageDelta();
     }
 }

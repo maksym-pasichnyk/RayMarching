@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <rosy/modules/timer/timer.h>
 
 namespace rosy {
     struct Config {
@@ -12,4 +13,10 @@ namespace rosy {
     };
 
     __attribute__((weak)) void conf(Config& c);
+    __attribute__((weak)) void load();
+    __attribute__((weak)) void unload();
+    __attribute__((weak)) void draw();
+    __attribute__((weak)) void focus(bool status);
+    __attribute__((weak)) void update(timer::duration dt);
+    __attribute__((weak)) void resize(int width, int height);
 }

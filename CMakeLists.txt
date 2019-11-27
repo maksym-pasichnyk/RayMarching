@@ -6,11 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(.)
 include_directories(rosy)
 include_directories(rosy/modules)
-include_directories(rosy/components)
-
-
-#add_compile_definitions(GLM_FORCE_DEPTH_ZERO_TO_ONE)
-#add_compile_definitions(GLM_FORCE_LEFT_HANDED)
+include_directories(src)
+include_directories(src/components)
 
 function(add_shaders out_var)
     set(result)
@@ -35,22 +32,28 @@ endfunction()
 
 add_shaders(SHADERS
     main.glsl
-        rosy/core.glsl
+        core.glsl
 )
 
-add_executable(RM
-        ${SHADERS}
+add_library(rosy STATIC
+        rosy/rosy.h
+        rosy/boot.cpp
         rosy/module.h
         rosy/modules/event/event.h
         rosy/modules/input/input.h
         rosy/modules/graphics/graphics.cpp
         rosy/modules/graphics/graphics.h
-        rosy/modules/graphics/camera.cpp
-        rosy/modules/graphics/camera.h
+        rosy/modules/graphics/shader.h
         rosy/modules/window/window.cpp
         rosy/modules/window/window.h
         rosy/modules/timer/timer.cpp
         rosy/modules/timer/timer.h
-        rosy/components/transform.h
-        rosy/boot.cpp main.cpp rosy/rosy.h)
+)
+
+add_executable(RM
+        ${SHADERS}
+        src/camera.cpp
+        src/camera.h
+        main.cpp conf.cpp)
+target_link_libraries(RM rosy)
 target_link_libraries(RM SDL2 GL GLEW)

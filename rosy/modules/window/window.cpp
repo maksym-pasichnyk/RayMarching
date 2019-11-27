@@ -1,14 +1,16 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <rosy.h>
 #include "window.h"
-#include "../../module.h"
-#include "../graphics/graphics.h"
+#include "module.h"
+#include "graphics/graphics.h"
+
+namespace {
+    module<rosy::graphics::Graphics> m_graphics;
+    module<rosy::window::Window> instance;
+}
 
 namespace rosy::window {
-    namespace {
-        module<rosy::graphics::Graphics> m_graphics;
-    }
-
     Window::Window() {
         SDL_InitSubSystem(SDL_INIT_VIDEO);
     }
@@ -36,12 +38,12 @@ namespace rosy::window {
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetSwapInterval(0);
 
+        SDL_SetWindowResizable(m_window, SDL_TRUE);
+
         glewInit();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        m_graphics->setSize(width, height);
 
         return true;
     }
@@ -59,5 +61,29 @@ namespace rosy::window {
 
     void Window::wrapMouse() {
         SDL_WarpMouseInWindow(m_window, m_width / 2, m_height / 2);
+    }
+
+    void Window::setRelativeMouse(bool relative) {
+//        if (is_mouse_relative != relative) {
+            is_mouse_relative = relative;
+
+            if (relative) {
+                SDL_ShowCursor(SDL_DISABLE);
+                SDL_WarpMouseInWindow(m_window, m_width / 2, m_height / 2);
+            } else {
+                SDL_ShowCursor(SDL_ENABLE);
+            }
+    }
+
+    int getWidth() {
+        return instance->getWidth();
+    }
+
+    int getHeight() {
+        return instance->getHeight();
+    }
+
+    void setRelativeMouse(bool relative) {
+        instance->setRelativeMouse(relative);
     }
 }

@@ -14,11 +14,11 @@ namespace rosy::input {
         }
 
         void update() {
-            m_delta = m_position - m_previous;
-            m_previous = m_position;
-
-            m_moved = m_moved_update;
-            m_moved_update = false;
+            m_moved = m_position != m_previous;
+            if (m_moved) {
+                m_delta = m_position - m_previous;
+                m_previous = m_position;
+            }
 
             memcpy(&m_previous_state, &m_current_state, sizeof(m_previous_state));
             memcpy(&m_current_state, m_keys, sizeof(m_current_state));
@@ -32,11 +32,20 @@ namespace rosy::input {
             return m_delta;
         }
 
+        inline void resetMouse(const int x, const int y) noexcept {
+            m_moved = false;
+            m_position.x = x;
+            m_position.y = y;
+            m_previous.x = x;
+            m_previous.y = y;
+            m_delta.x = 0;
+            m_delta.y = 0;
+        }
+
         inline void mouseMove(const SDL_MouseMotionEvent event) noexcept {
             m_previous = m_position;
             m_position.x = event.x;
             m_position.y = event.y;
-            m_moved_update = true;
         }
 
         [[nodiscard]] inline bool getKeyDown(const uint8_t key) const noexcept {

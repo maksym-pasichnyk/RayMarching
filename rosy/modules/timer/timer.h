@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
 
-namespace rosy::chrono {
+namespace rosy::timer {
     using clock = std::chrono::high_resolution_clock;
     using point = clock::time_point;
     using duration = std::chrono::duration<long, std::nano>;
@@ -28,4 +28,7 @@ namespace rosy::chrono {
     inline void sleep(const std::chrono::duration<Rep, Period>& time) {
         std::this_thread::sleep_for(time);
     }
+
+    point getTime();
+    size_t getFPS();
 }
