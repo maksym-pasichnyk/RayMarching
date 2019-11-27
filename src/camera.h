@@ -1,10 +1,12 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include <rosy/property.h>
 #include <glm/mat4x4.hpp>
-#include <src/components/transform.h>
-#include "timer/timer.h"
+
+#include <property.h>
+#include <timer/timer.h>
+
+#include "transform.h"
 
 struct Camera {
 public:

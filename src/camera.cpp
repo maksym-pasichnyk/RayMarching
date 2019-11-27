@@ -1,11 +1,11 @@
 #include "camera.h"
 
-#include "input/input.h"
-#include "rosy/modules/graphics/graphics.h"
+#include <input/input.h>
+#include <graphics/graphics.h>
 
 namespace {
-module<rosy::input::Input> m_input;
-module<rosy::graphics::Graphics> m_graphics;
+    module<rosy::input::Input> m_input;
+    module<rosy::graphics::Graphics> m_graphics;
 }
 
 glm::vec3 Camera::inverseTransform(glm::vec3 point) {

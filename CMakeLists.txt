@@ -3,6 +3,8 @@ project(RM)
 
 set(CMAKE_CXX_STANDARD 17)
 
+add_subdirectory(rosy)
+
 include_directories(.)
 include_directories(rosy)
 include_directories(rosy/modules)
@@ -32,22 +34,7 @@ endfunction()
 
 add_shaders(SHADERS
     main.glsl
-        core.glsl
-)
-
-add_library(rosy STATIC
-        rosy/rosy.h
-        rosy/boot.cpp
-        rosy/module.h
-        rosy/modules/event/event.h
-        rosy/modules/input/input.h
-        rosy/modules/graphics/graphics.cpp
-        rosy/modules/graphics/graphics.h
-        rosy/modules/graphics/shader.h
-        rosy/modules/window/window.cpp
-        rosy/modules/window/window.h
-        rosy/modules/timer/timer.cpp
-        rosy/modules/timer/timer.h
+    core.glsl
 )
 
 add_executable(RM

@@ -1,21 +1,20 @@
 #pragma once
 
-#include "property.h"
+#include <iostream>
+#include <list>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <timer/timer.h>
-#include <iostream>
 
-#include <list>
-
-static glm::mat4 TRS(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) {
-    return glm::scale(glm::translate(glm::mat4(1.0f), position) * glm::mat4_cast(rotation), scale);
-}
+#include <property.h>
 
 struct Transform {
 public:
+    inline static glm::mat4 TRS(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) {
+        return glm::scale(glm::translate(glm::mat4(1.0f), position) * glm::mat4_cast(rotation), scale);
+    }
+
     property<glm::vec3, property<>::get, property<>::set> position = {
         [&] { return m_worldPosition; },
         [&](const glm::vec3 &v) {
