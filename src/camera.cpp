@@ -24,7 +24,7 @@ uint8_t Camera::update(rosy::timer::duration dt) {
 
         const auto mouseDelta = m_input->getMouseDelta();
 
-        const auto delta = -glm::normalize(glm::vec2(mouseDelta)) * sec * 5.0f;
+        const auto delta = -glm::normalize(glm::vec2(mouseDelta)) * sec * 2.0f;
 
         glm::quat q_up = glm::angleAxis(delta.y, glm::vec3(1,0,0));
         glm::quat q_right = glm::angleAxis(delta.x, glm::vec3(0,1,0));
@@ -34,19 +34,19 @@ uint8_t Camera::update(rosy::timer::duration dt) {
 
     if (m_input->getKey(SDL_SCANCODE_W)) {
         state ^= UpdateState::move_fb;
-        transform.position = transform.position.get() + inverseTransform(transform.forward.m_get()) * 20.0f * sec;
+        transform.position = transform.position.get() + inverseTransform(transform.forward.m_get()) * sec;
     }
     if (m_input->getKey(SDL_SCANCODE_S)) {
         state ^= UpdateState::move_fb;
-        transform.position = transform.position.get() + inverseTransform(transform.backward.m_get()) * 20.0f * sec;
+        transform.position = transform.position.get() + inverseTransform(transform.backward.m_get()) * sec;
     }
     if (m_input->getKey(SDL_SCANCODE_A)) {
         state ^= UpdateState::move_lr;
-        transform.position = transform.position.get() + inverseTransform(transform.left.m_get()) * 20.0f * sec;
+        transform.position = transform.position.get() + inverseTransform(transform.left.m_get()) * sec;
     }
     if (m_input->getKey(SDL_SCANCODE_D)) {
         state ^= UpdateState::move_lr;
-        transform.position = transform.position.get() + inverseTransform(transform.right.m_get()) * 20.0f * sec;
+        transform.position = transform.position.get() + inverseTransform(transform.right.m_get()) * sec;
     }
 
     return state;

@@ -35,12 +35,14 @@ endfunction()
 add_shaders(SHADERS
     main.glsl
     core.glsl
+    fractal.glsl
 )
 
 add_executable(RM
         ${SHADERS}
         src/camera.cpp
         src/camera.h
-        main.cpp conf.cpp)
+        main.cpp
+        conf.cpp)
 target_link_libraries(RM rosy)
-target_link_libraries(RM SDL2 GL GLEW)
+target_link_libraries(RM SDL2 GL GLEW openal)

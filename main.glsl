@@ -206,11 +206,13 @@ vec3 getNormal(vec3 point) {
 }
 
 float render(in Ray ray) {
+    vec3 p = ray.orig;
     float dist = 0;
-    for (int i = 0; i < MAX_STEPS; i++) {
-        float d = scene(ray.orig + ray.dir * dist);
+    for (int i = 0; dist < MAX_DIST && i < MAX_STEPS; i++) {
+        float d = scene(p);
         dist += d;
-        if (dist < SURFACE_DIST || dist > MAX_DIST) break;
+        p += ray.dir * d;
+        if (dist < SURFACE_DIST) break;
     }
     return dist;
 }

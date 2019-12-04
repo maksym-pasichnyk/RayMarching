@@ -1,9 +1,10 @@
 #include <rosy.h>
-#include <rosy.h>
-#include <module.h>
-#include <graphics/shader.h>
+
 #include <graphics/graphics.h>
+#include <graphics/shader.h>
 #include <window/window.h>
+#include <audio/audio.h>
+
 #include <camera.h>
 
 #include <cstring>
@@ -14,6 +15,8 @@ namespace {
     using rosy::graphics::ShaderType;
     using rosy::graphics::ShaderProgram;
     using rosy::graphics::Attrib;
+    using rosy::audio::Source;
+    using rosy::audio::SourceType;
 
     struct VertexData {
         float x, y, u, v;
@@ -29,16 +32,28 @@ namespace {
 
     Camera camera{};
 
+    // todo: resources
     extern "C" const char _binary_core_glsl_start;
     extern "C" const char _binary_core_glsl_end;
 
     extern "C" const char _binary_main_glsl_start;
     extern "C" const char _binary_main_glsl_end;
+
+    extern "C" const char _binary_fractal_glsl_start;
+    extern "C" const char _binary_fractal_glsl_end;
+
+    std::unique_ptr<Source> sound;
 }
 
+
 void rosy::load() {
+    sound = rosy::audio::newSource("../supernatural.wav", SourceType::Stream);
+    sound->setLoop(true);
+    sound->play();
+
     const std::string core_glsl(&_binary_core_glsl_start, &_binary_core_glsl_end - &_binary_core_glsl_start);
     const std::string main_glsl(&_binary_main_glsl_start, &_binary_main_glsl_end - &_binary_main_glsl_start);
+    const std::string fractal_glsl(&_binary_fractal_glsl_start, &_binary_fractal_glsl_end - &_binary_fractal_glsl_start);
 
     static constexpr std::array indices {
             0, 1, 3,
@@ -52,7 +67,7 @@ void rosy::load() {
             )",
             core_glsl.data(),
             "\n",
-            main_glsl.data()
+            fractal_glsl.data()
     });
 
     fragment = rosy::graphics::newShader(ShaderType::Fragment, {
@@ -62,7 +77,7 @@ void rosy::load() {
             )",
             core_glsl.data(),
             "\n",
-            main_glsl.data()
+            fractal_glsl.data()
     });
 
     glCreateProgramPipelines(1, &pipeline.program);
@@ -103,7 +118,7 @@ void rosy::load() {
 
     std::memcpy(m_buffer, vertices.data(), sizeof(vertices));
 
-    camera.transform.position = {0, 1, 10};
+    camera.transform.position = {0, 0, 3};
 
     fragment.set("_WorldSpaceCameraPos", camera.transform.position.get());
     fragment.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
@@ -119,8 +134,6 @@ void rosy::load() {
 void rosy::unload() {
     glUnmapNamedBuffer(m_vbo);
 }
-
-
 
 void rosy::resize(int width, int height) {
     glViewport(0, 0, width, height);
