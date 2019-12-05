@@ -85,8 +85,8 @@ void rosy::load() {
     pipeline.useProgramStages(GL_FRAGMENT_SHADER_BIT, fragment);
     glBindProgramPipeline(pipeline.program);
     
-    Attrib position = pipeline.getAttribLocation("in_data.position");
-    Attrib uv = pipeline.getAttribLocation("in_data.uv");
+    Attrib position = vertex.getAttribLocation("in_data.position");
+    Attrib uv = vertex.getAttribLocation("in_data.uv");
 
     glCreateBuffers(1, &m_vbo);
     glNamedBufferStorage(m_vbo, sizeof(VertexData) * 4, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -124,6 +124,10 @@ void rosy::load() {
     fragment.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
     fragment.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
 
+    vertex.set("_WorldSpaceCameraPos", camera.transform.position.get());
+    vertex.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
+    vertex.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
+
     resize(rosy::window::getWidth(), rosy::window::getHeight());
 
     rosy::window::setRelativeMouse(true);
@@ -154,6 +158,7 @@ void rosy::resize(int width, int height) {
     m_buffer[3].v = HALF_FOV_60_TAN + yScale;
 
     fragment.setInt("_Resolution", width, height);
+    vertex.setInt("_Resolution", width, height);
 }
 
 void rosy::update(rosy::timer::duration dt) {
@@ -161,15 +166,19 @@ void rosy::update(rosy::timer::duration dt) {
 
     if (state & Camera::UpdateState::updatePos) {
         fragment.set("_WorldSpaceCameraPos", camera.transform.position.get());
+        vertex.set("_WorldSpaceCameraPos", camera.transform.position.get());
     }
 
     if (state & Camera::UpdateState::updateMat) {
         fragment.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
         fragment.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
+        vertex.set("_LocalToWorldMatrix", camera.transform.localToWorldMatrix());
+        vertex.set("_CameraToWorldMatrix", camera.cameraToWorldMatrix());
     }
 
     auto iTime = std::chrono::duration<double>(rosy::timer::getTime() - timeStart);
     fragment.setFloat("_Time", iTime.count());
+    vertex.setFloat("_Time", iTime.count());
 }
 
 void rosy::draw() {
